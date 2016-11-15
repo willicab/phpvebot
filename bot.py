@@ -11,7 +11,7 @@ API_TOKEN = '188169419:AAHFReEesPRkm40-coiKRlrG4uGmbKZdH9M'
 PHP_URL = 'https://secure.php.net/manual-lookup.php?pattern='
 
 bot = telebot.TeleBot(API_TOKEN)
-telebot.logger.setLevel(logging.DEBUG)
+#telebot.logger.setLevel(logging.DEBUG)
 
 
 
@@ -20,6 +20,7 @@ def query_text(inline_query):
     try:
         i = 0
         result = []
+        print ('searching ' + inline_query.query)
         r = requests.get(PHP_URL + inline_query.query)
         salida = r.text.split("\n")
         if "PHP: Manual Quick Reference" in salida[7] :
@@ -38,11 +39,10 @@ def query_text(inline_query):
                     linea = x
             re_list = re.compile(r'<base href="(.*)">')
             f_list = re_list.findall(salida[linea])
-            print salida[linea], f_list
             url = f_list[0]
             func = inline_query.query
             result.append(types.InlineQueryResultArticle('1', func, types.InputTextMessageContent(func + " " + url)))
-        
+        print (': Found ' + str(len(result)) + ' results')
         bot.answer_inline_query(inline_query.id, result)
     except Exception as e:
         print(e)
@@ -50,7 +50,7 @@ def query_text(inline_query):
 def main_loop():
     bot.polling(True)
     while 1:
-        time.sleep(5)
+        time.sleep(1)
 
 
 if __name__ == '__main__':
